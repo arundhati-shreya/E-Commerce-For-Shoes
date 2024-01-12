@@ -3,10 +3,14 @@ import Modal from '../Modal/Modal.js'
 import { CartContext } from "../Store/CartProvider.js";
 
 const Cart = (props) => {
-    const { shoeList } = useContext(CartContext);
+    const { shoeList, removeFromCart } = useContext(CartContext);
 
     const totalAmount = shoeList.reduce((total, item) => total + parseFloat(item.price), 0).toFixed(2);
-   
+    
+    const handleDelete = (shoeSize) => {
+        removeFromCart(shoeSize);
+    };
+
 
     return (
         <Modal onClose={props.onClose}>
@@ -30,7 +34,8 @@ const Cart = (props) => {
                                     <p>Size: <span className="text-info">{item.selectedSize}</span></p>
                                 </div>
                                 <div className="text-end">
-                                    <p className="text-success">Price: ${item.price}</p>
+                                    <p className="text-success">Price: ${item.price}</p>  
+                                    <button  onClick={() => handleDelete(item.selectedSize)} className="btn btn-danger">Order</button>
                                 </div>
                             </div>
                         </li>

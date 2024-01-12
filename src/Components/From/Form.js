@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
 import FormList from "./FormList";
-import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
+import "bootstrap/dist/css/bootstrap.min.css"; 
 import { CartContext} from "../Store/CartProvider";
 
 const Form = (props) => {
@@ -16,6 +17,19 @@ const Form = (props) => {
   const [itemList, setItemList] = useState([]);
   const { shoeList } = useContext(CartContext)
 
+  useEffect(() => {
+    fetchDataList();
+  }, []);
+
+  const fetchDataList = async () => {
+    try {
+      const response = await axios.get("https://crudcrud.com/api/941eb07dceaf4b23b7ff33249adc8f86/shoeList");
+      setItemList(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const changeHandler = (e) => {
     const { name, value } = e.target;
     setShoeData((prevShoeData) => ({
@@ -24,8 +38,17 @@ const Form = (props) => {
     }));
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async(e) => {
     e.preventDefault();
+    try {
+      
+      await axios.post("https://crudcrud.com/api/941eb07dceaf4b23b7ff33249adc8f86/shoeList", shoeData);
+      
+      fetchDataList();
+    } catch (error) {
+      console.error("Error posting data:", error);
+    }
+
     setItemList([...itemList, shoeData]);
     setShoeData({
       shoename: "",
@@ -135,7 +158,7 @@ const Form = (props) => {
 
   <div className="container mt-4 border rounded p-4" style={{ maxWidth: "600px", background: "#f8f9fa" }}>
 
-    <FormList onList={itemList} />
+    <FormList onList={itemList} fetchDataList={fetchDataList} />
   </div>
     </>
   );
